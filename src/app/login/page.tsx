@@ -1,4 +1,5 @@
 // ./src/app/login/page.ts
+"use client"
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { checkLogin } from '@/libraries/api';
