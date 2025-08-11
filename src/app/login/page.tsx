@@ -1,6 +1,6 @@
 // ./src/app/login/page.ts
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { checkLogin } from '@/libraries/api';
 
 export default function Login() {
