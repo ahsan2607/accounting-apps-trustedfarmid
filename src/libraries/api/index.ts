@@ -82,7 +82,6 @@ export const submitFormOperationalAccounting = async (
       tanggal: data.tanggal,
       nominal: data.nominal,
       keterangan: data.keterangan,
-      // kategori is derived on the backend
     } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {
