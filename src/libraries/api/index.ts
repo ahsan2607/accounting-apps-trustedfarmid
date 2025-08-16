@@ -24,6 +24,15 @@ export const checkLogin = async (username: string, password: string): Promise<Ap
   }
 };
 
+export const isAuthenticated = async (): Promise<ApiResponse<boolean>> => {
+  try {
+    const response = await api.post<ApiResponse<boolean>>('', { action: 'isAuthenticated' } satisfies ProxyRequestBody);
+    return response.data;
+  } catch (error: unknown) {
+    return handleError(error);
+  }
+};
+
 export const logout = async (): Promise<ApiResponse<LogoutResponse>> => {
   try {
     const response = await api.post<ApiResponse<LogoutResponse>>('', { action: 'logout' } satisfies ProxyRequestBody);

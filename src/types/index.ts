@@ -27,7 +27,7 @@ export interface LogoutResponse {
 
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getKategoriData' | 'generateLedger' | 'printInvoiceToPDF';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getKategoriData' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
   username?: string;
   password?: string;
   deliveryDate?: string;
