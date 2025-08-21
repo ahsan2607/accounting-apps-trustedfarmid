@@ -27,6 +27,7 @@ const menuItems = [
   { name: "Operator Accounting", icon: Settings, href: "/dashboard/cashflow-statements/operator-accounting" },
   { name: "Operational Accounting", icon: Settings, href: "/dashboard/cashflow-statements/operational-accounting" },
   { name: "Veggies Order", icon: Settings, href: "/dashboard/cashflow-statements/veggies-order" },
+  { name: "Market Veggies Order", icon: Settings, href: "/dashboard/cashflow-statements/market-veggies-order" },
 ];
 
 export default function RootLayout({

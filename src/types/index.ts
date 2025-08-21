@@ -32,6 +32,7 @@ export interface ProxyRequestBody {
   password?: string;
   deliveryDate?: string;
   orders?: Order[];
+  sheet?: string;
   tanggal?: string;
   kategori?: string;
   nominal?: string;

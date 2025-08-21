@@ -66,7 +66,7 @@ export default function Dashboard() {
       customer,
     }));
 
-    const response = await submitOrders(deliveryDate, ordersWithCustomer, "Customer Order");
+    const response = await submitOrders(deliveryDate, ordersWithCustomer, "Market Customer Order");
     setLoading(false); // ✅ Stop loading
 
     if (response.success) {

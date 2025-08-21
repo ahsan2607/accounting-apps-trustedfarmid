@@ -69,12 +69,13 @@ export const getKategoriData = async (): Promise<ApiResponse<KategoriData>> => {
   }
 };
 
-export const submitOrders = async (deliveryDate: string, orders: Order[]): Promise<ApiResponse<string>> => {
+export const submitOrders = async (deliveryDate: string, orders: Order[], sheet: string): Promise<ApiResponse<string>> => {
   try {
     const response = await api.post<ApiResponse<string>>('', {
       action: 'submitOrders',
       deliveryDate,
       orders,
+      sheet,
     } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {
