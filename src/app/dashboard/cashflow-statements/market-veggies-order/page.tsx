@@ -7,10 +7,10 @@ import { Field } from "@/components/molecules/";
 import { Button } from "@/components/atoms/buttons/Button";
 
 export default function Dashboard() {
-  const [customers, setCustomers] = useState<string[]>([]);
+  // const [customers, setCustomers] = useState<string[]>([]);
   const [items, setItems] = useState<string[]>([]);
   const [deliveryDate, setDeliveryDate] = useState<string>("");
-  const [customer, setCustomer] = useState<string>("");
+  const [, setCustomer] = useState<string>("");
   const [orders, setOrders] = useState<Omit<Order, "customer">[]>([{ item: "", qty: "" }]);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // ✅ loading state
@@ -26,9 +26,9 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const [customerRes, itemRes] = await Promise.all([getCustomerList(), getItemList()]);
-        if (customerRes.success) {
-          setCustomers(["-- Select Customer --", ...(customerRes.data || [])]);
-        }
+        // if (customerRes.success) {
+        //   setCustomers(["-- Select Customer --", ...(customerRes.data || [])]);
+        // }
         if (itemRes.success) {
           setItems(["-- Select Item --", ...(itemRes.data || [])]);
         }
@@ -63,7 +63,7 @@ export default function Dashboard() {
 
     const ordersWithCustomer: Order[] = orders.map((o) => ({
       ...o,
-      customer,
+      customer: "Customer Pasar TKI",
     }));
 
     const response = await submitOrders(deliveryDate, ordersWithCustomer, "Market Customer Order");
@@ -72,7 +72,7 @@ export default function Dashboard() {
     if (response.success) {
       setMessage(response.data || "Orders submitted successfully");
       setDeliveryDate("");
-      setCustomer("");
+      setCustomer("Customer Pasar TKI");
       setOrders([{ item: "", qty: "" }]);
       setTimeout(() => setMessage(""), 3000);
     } else {
@@ -108,13 +108,13 @@ export default function Dashboard() {
           className="w-full border rounded p-2"
         />
 
-        <Field.Dropdown
+        {/* <Field.Dropdown
           value={customer}
           onChange={(e) => setCustomer(e.target.value)}
           required
           className="w-full border rounded p-2"
           options={customers.map((c) => ({ label: c, value: c }))}
-        />
+        /> */}
 
         {orders.map((order, index) => (
           <div key={index} className="flex space-x-2 items-center">
