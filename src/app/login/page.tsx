@@ -16,6 +16,7 @@ export default function Login() {
     const response = await checkLogin(username, password);
     if (response.success) {
       localStorage.setItem('authenticated', 'true');
+      localStorage.setItem('trusted-farm-id-accounting-app', username);
       router.push('/dashboard');
     } else {
       setError(response.error || 'Login failed');

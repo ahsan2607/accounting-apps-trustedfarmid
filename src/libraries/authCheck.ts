@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { isAuthenticated } from "./api";
 
-
 export function AuthChecker() {
   useEffect(() => {
     // Define interval check

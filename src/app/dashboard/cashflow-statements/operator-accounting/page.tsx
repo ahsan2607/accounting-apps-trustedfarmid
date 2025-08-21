@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getKategoriData, submitFormOperationalAccounting, logout } from "@/libraries/api";
 import { OperationalAccountingData } from "@/types";
 import { Field } from "@/components/molecules/";
-import { Button } from "@/components/atoms/buttons/Button";
+import { Button } from "@/components/atoms/interactive/Button";
 
 export default function Dashboard() {
   const [subCategories, setSubCategories] = useState<string[]>([]);
