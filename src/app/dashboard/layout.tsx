@@ -47,7 +47,7 @@ export default function DashboardLayout({
           Logout
         </Button>
       </header>
-      <main className="p-6 min-h-screen">{children}</main>
+      <main className="p-4 min-h-screen">{children}</main>
     </div>
   );
 }

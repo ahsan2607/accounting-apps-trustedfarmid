@@ -37,12 +37,12 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
       try {
         const [customerRes, itemRes] = await Promise.all([getCustomerList(), getItemList()]);
         if (customerRes.success && !fixedCustomer) {
-          setCustomers(["-- Select Customer --", ...(customerRes.data || [])]);
+          setCustomers(["Select Customer", ...(customerRes.data || [])]);
         } else if (fixedCustomer) {
           setCustomer(fixedCustomer);
         }
         if (itemRes.success) {
-          setItems(["-- Select Item --", ...(itemRes.data || [])]);
+          setItems(["Select Item", ...(itemRes.data || [])]);
         }
         if (!customerRes.success || !itemRes.success) {
           showErrorToast("Failed to fetch some data");
@@ -67,12 +67,12 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
       }
     }
 
-    if (!fixedCustomer && (!customer || customer === "-- Select Customer --")) {
+    if (!fixedCustomer && (!customer || customer === "Select Customer")) {
       errs.push("Please select a customer.");
     }
 
     orders.forEach((order, idx) => {
-      if (!order.item || order.item === "-- Select Item --") {
+      if (!order.item || order.item === "Select Item") {
         errs.push(`Order #${idx + 1}: Please select an item.`);
       }
       const qtyNum = Number(order.qty);
@@ -82,6 +82,13 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
     });
 
     return errs;
+  };
+
+  const getAvailableItems = (currentIndex: number) => {
+    const selectedItems = orders.map((o) => o.item);
+    return items.filter(
+      (item) => item === "Select Item" || item === orders[currentIndex].item || !selectedItems.includes(item)
+    );
   };
 
   const handleAddOrder = () => {
@@ -128,7 +135,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
       </div>
@@ -153,26 +160,29 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
         <h2 className="text-xl font-semibold mb-2">Detail Order</h2>
         {orders.map((order, index) => (
           <div key={index} className="grid grid-cols-12 gap-x-1 items-center w-full">
-            <div className={orders.length > 1 ? "col-span-5 md:col-span-6" : "col-span-6"}>
+            <div className={orders.length > 1 ? "col-span-6" : "col-span-7"}>
               <Field.Dropdown
                 value={order.item}
                 onChange={(e) => handleOrderChange(index, "item", e.target.value)}
-                className="border rounded"
-                options={items.map((item) => ({ label: item, value: item }))}
+                className="border rounded p-2"
+                options={getAvailableItems(index).map((item) => ({
+                  label: item,
+                  value: item,
+                }))}
               />
             </div>
-            <div className={orders.length > 1 ? "col-span-5" : "col-span-6"}>
+            <div className={orders.length > 1 ? "col-span-4" : "col-span-5"}>
               <Field.Number
                 value={order.qty}
                 onChange={(e) => handleOrderChange(index, "qty", e.target.value)}
                 placeholder="Quantity"
-                className="col-span-5 border rounded"
+                className="border rounded p-2"
               />
             </div>
 
             {orders.length > 1 && (
               <Interactive.Button
-                className="col-span-2 md:col-span-1 !px-1 flex justify-center"
+                className="col-span-2 flex justify-center"
                 type="button"
                 variant="danger"
                 onClick={() => handleRemoveOrder(index)}
@@ -184,9 +194,11 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
         ))}
 
         <div className="flex space-x-2">
-          <Interactive.Button type="button" onClick={handleAddOrder} variant="secondary">
-            Add Order
-          </Interactive.Button>
+          {orders.length < items.length - 1 && (
+            <Interactive.Button type="button" onClick={handleAddOrder} variant="secondary">
+              Add Order
+            </Interactive.Button>
+          )}
           <Interactive.Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Submitting..." : "Submit Orders"}
           </Interactive.Button>
