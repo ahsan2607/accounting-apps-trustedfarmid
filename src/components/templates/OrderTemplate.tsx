@@ -12,9 +12,10 @@ import { Trash } from "lucide-react";
 type OrderTemplateProps = {
   fixedCustomer?: string;
   targetSheet: string;
+  formTitle: string;
 };
 
-export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, targetSheet }) => {
+export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, targetSheet, formTitle }) => {
   const [customers, setCustomers] = useState<string[]>([]);
   const [items, setItems] = useState<string[]>([]);
   const [deliveryDate, setDeliveryDate] = useState<string>("");
@@ -137,7 +138,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">{formTitle}</h1>
       </div>
 
       <h2 className="text-xl font-semibold mb-2">Order Veggies</h2>

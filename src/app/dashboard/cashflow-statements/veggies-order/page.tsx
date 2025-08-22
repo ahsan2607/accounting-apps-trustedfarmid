@@ -3,6 +3,6 @@ import { OrderTemplate } from "@/components/templates/OrderTemplate";
 
 export default function Dashboard() {
   return (
-    <OrderTemplate targetSheet="Customer Order"></OrderTemplate>
+    <OrderTemplate formTitle="Veggies Order" targetSheet="Customer Order"></OrderTemplate>
   );
 }
