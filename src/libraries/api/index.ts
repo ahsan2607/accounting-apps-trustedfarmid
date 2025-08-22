@@ -84,14 +84,16 @@ export const submitOrders = async (deliveryDate: string, orders: Order[], sheet:
 };
 
 export const submitFormOperationalAccounting = async (
-  data: OperationalAccountingData
+  entryDate: string,
+  entries: OperationalAccountingData[],
+  sheetTarget?: string
 ): Promise<ApiResponse<string>> => {
   try {
     const response = await api.post<ApiResponse<string>>('', {
       action: 'submitFormOperationalAccounting',
-      tanggal: data.tanggal,
-      nominal: data.nominal,
-      keterangan: data.keterangan,
+      entryDate,       // 👈 optional batch-level date if needed
+      entries,       // 👈 array of multiple operationals
+      sheet: sheetTarget ?? '', // 👈 optional target sheet (like orders)
     } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {

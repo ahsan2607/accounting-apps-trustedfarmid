@@ -10,7 +10,7 @@ export type TextProps = Omit<Input.InputProps, "type"> & {
 export const Text: React.FC<TextProps> = ({ label, errorMessage, id, ...rest }) => {
   return (
     <Container.Field label={label} errorMessage={errorMessage} htmlFor={id}>
-      <Input.Input id={id} type="number" {...rest} />
+      <Input.Input id={id} type="text" {...rest} />
     </Container.Field>
   );
 };

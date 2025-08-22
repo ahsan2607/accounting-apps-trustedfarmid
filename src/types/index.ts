@@ -15,6 +15,7 @@ export interface OperationalAccountingData {
 //   kategori: string;
   nominal: string;
   keterangan: string;
+  keteranganTambahan: string;
 }
 
 export interface KategoriData {
@@ -32,6 +33,8 @@ export interface ProxyRequestBody {
   password?: string;
   deliveryDate?: string;
   orders?: Order[];
+  entryDate?: string;
+  entries?: Omit<OperationalAccountingData, "keteranganTambahan">[]
   sheet?: string;
   tanggal?: string;
   kategori?: string;

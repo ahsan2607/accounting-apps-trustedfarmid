@@ -159,8 +159,8 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
 
         <h2 className="text-xl font-semibold mb-2">Detail Order</h2>
         {orders.map((order, index) => (
-          <div key={index} className="grid grid-cols-12 gap-x-1 items-center w-full">
-            <div className={orders.length > 1 ? "col-span-6" : "col-span-7"}>
+          <div key={index} className="grid grid-cols-12 gap-1 items-center w-full">
+            <div className="col-span-12">
               <Field.Dropdown
                 value={order.item}
                 onChange={(e) => handleOrderChange(index, "item", e.target.value)}
@@ -171,12 +171,12 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
                 }))}
               />
             </div>
-            <div className={orders.length > 1 ? "col-span-4" : "col-span-5"}>
+            <div className={orders.length > 1 ? "col-span-10" : "col-span-12"}>
               <Field.Number
                 value={order.qty}
-                onChange={(e) => handleOrderChange(index, "qty", e.target.value)}
-                placeholder="Quantity"
-                className="border rounded p-2"
+                onChange={(val) => handleOrderChange(index, "qty", val)}
+                placeholder="Jumlah"
+                suffix="kg"
               />
             </div>
 
