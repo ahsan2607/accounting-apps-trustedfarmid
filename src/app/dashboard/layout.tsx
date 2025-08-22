@@ -26,6 +26,7 @@ export default function DashboardLayout({
   const handleLogout = async () => {
     await fetch('/api/logout', { method: 'POST' });
     localStorage.removeItem('trusted-farm-id-accounting-app');
+    localStorage.removeItem('authenticated');
     router.push('/login');
   };
 
