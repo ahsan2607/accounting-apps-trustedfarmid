@@ -37,7 +37,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       try {
         const kategoriRes = await getKategoriData();
         if (kategoriRes.success) {
-          setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {}).sort(), "Lainnya"]);
+          setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {}).sort()]);
         } else {
           showErrorToast("Failed to fetch kategori data");
         }
