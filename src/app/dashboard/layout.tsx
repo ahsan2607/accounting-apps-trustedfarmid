@@ -2,7 +2,7 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/atoms/interactive/Button";
-import { logout } from "@/libraries/api";
+// import { logout } from "@/libraries/api";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -24,14 +24,9 @@ export default function DashboardLayout({
   }, []);
 
   const handleLogout = async () => {
-    const response = await logout();
-    if (response.success) {
-      localStorage.removeItem("authenticated");
-      localStorage.removeItem("trusted-farm-id-accounting-app");
-      router.push("/login");
-    } else {
-      console.error(response.error || "Failed to logout");
-    }
+    await fetch('/api/logout', { method: 'POST' });
+    localStorage.removeItem('trusted-farm-id-accounting-app');
+    router.push('/login');
   };
 
   return (

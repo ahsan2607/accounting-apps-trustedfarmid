@@ -37,7 +37,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       try {
         const kategoriRes = await getKategoriData();
         if (kategoriRes.success) {
-          setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {})]);
+          setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {}).sort(), "Lainnya"]);
         } else {
           showErrorToast("Failed to fetch kategori data");
         }
@@ -61,6 +61,9 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       }
       if (!entry.keterangan || !subCategories.includes(entry.keterangan) || entry.keterangan === "Select Kategori") {
         errs.push(`Entri #${idx + 1}: Deskripsi harus dipilih.`);
+      }
+      if (!entry.keteranganTambahan && entry.keterangan === "Lainnya") {
+        errs.push(`Keterangan harus diisi`);
       }
     });
 
@@ -147,15 +150,6 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
               />
             </div>
             <div className="w-full">
-              <Field.Text
-                value={entry.keteranganTambahan}
-                onChange={(e) => handleEntryChange(id, "keteranganTambahan", e.target.value)}
-                label="Keterangan"
-                placeholder="Keterangan Tambahan"
-              />
-            </div>
-
-            <div className="w-full">
               <Field.Number
                 value={entry.nominal}
                 onChange={(val) => handleEntryChange(id, "nominal", val)}
@@ -163,6 +157,14 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
                 placeholder="Nominal"
                 prefix="Rp"
                 suffix=",-"
+              />
+            </div>
+            <div className="w-full">
+              <Field.Text
+                value={entry.keteranganTambahan}
+                onChange={(e) => handleEntryChange(id, "keteranganTambahan", e.target.value)}
+                label="Keterangan"
+                placeholder="Keterangan Tambahan"
               />
             </div>
           </div>

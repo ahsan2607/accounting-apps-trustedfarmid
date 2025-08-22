@@ -1,5 +1,5 @@
-// ./src/app/login/page.ts
-"use client"
+// ./src/app/login/page.tsx (Next.js)
+"use client";
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { checkLogin } from '@/libraries/api';
@@ -14,10 +14,25 @@ export default function Login() {
     e.preventDefault();
     setError('');
     const response = await checkLogin(username, password);
-    if (response.success) {
-      localStorage.setItem('authenticated', 'true');
-      localStorage.setItem('trusted-farm-id-accounting-app', username);
-      router.push('/dashboard');
+    if (response.success && response.data) {
+      // Set session cookie via fetch to a new API route
+      const sessionData = {
+        authenticated: true,
+        coaID: response.data.coaID,
+        username: response.data.username,
+        loginTime: new Date().toISOString(),
+      };
+      const setSessionRes = await fetch('/api/set-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionData),
+      });
+      if (setSessionRes.ok) {
+        localStorage.setItem('trusted-farm-id-accounting-app', username); // Optional
+        router.push('/dashboard');
+      } else {
+        setError('Session setup failed');
+      }
     } else {
       setError(response.error || 'Login failed');
     }
