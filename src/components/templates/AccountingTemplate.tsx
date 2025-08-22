@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { getKategoriData, submitFormOperationalAccounting } from "@/libraries/api";
 import { OperationalAccountingData } from "@/types";
 import { Field } from "@/components/molecules/";
@@ -25,28 +25,24 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
   const showSuccessToast = useToastSuccess();
   const showErrorToast = useToastError();
 
-  const router = useRouter();
+//   const router = useRouter();
 
-  useEffect(() => {
-    if (!localStorage.getItem("authenticated")) {
-      router.push("/login");
-      return;
-    }
-
+ useEffect(() => {
     const fetchData = async () => {
       try {
         const kategoriRes = await getKategoriData();
         if (kategoriRes.success) {
           setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {}).sort()]);
         } else {
-          showErrorToast("Failed to fetch kategori data");
+          showErrorToast(kategoriRes.error || "Failed to fetch kategori data");
         }
-      } catch {
+      } catch (error) {
+        console.error('Fetch error:', error);
         showErrorToast("Failed to fetch data");
       }
     };
     fetchData();
-  }, [router, showErrorToast]);
+  }, [showErrorToast]);
 
   const validateForm = () => {
     const errs: string[] = [];
