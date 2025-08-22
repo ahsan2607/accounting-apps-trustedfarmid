@@ -7,7 +7,7 @@ import { Field } from "@/components/molecules/";
 import { Interactive } from "@/components/atoms/";
 import { useToastSuccess, useToastError } from "@/hooks/Toast";
 import { ToastContainer } from "react-toastify";
-import { Trash } from "lucide-react";
+import { X } from "lucide-react";
 
 type OrderTemplateProps = {
   fixedCustomer?: string;
@@ -38,12 +38,12 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
       try {
         const [customerRes, itemRes] = await Promise.all([getCustomerList(), getItemList()]);
         if (customerRes.success && !fixedCustomer) {
-          setCustomers(["Select Customer", ...(customerRes.data || [])]);
+          setCustomers(["Pilih Pelanggan", ...(customerRes.data || [])]);
         } else if (fixedCustomer) {
           setCustomer(fixedCustomer);
         }
         if (itemRes.success) {
-          setItems(["Select Item", ...(itemRes.data || [])]);
+          setItems(["Pilih Sayur", ...(itemRes.data || [])]);
         }
         if (!customerRes.success || !itemRes.success) {
           showErrorToast("Failed to fetch some data");
@@ -59,26 +59,26 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
     const errs: string[] = [];
 
     if (!deliveryDate) {
-      errs.push("Delivery date is required.");
+      errs.push("Tanggal harus diisi.");
     } else {
       const today = new Date();
       const selectedDate = new Date(deliveryDate);
       if (selectedDate < new Date(today.toDateString())) {
-        errs.push("Delivery date cannot be in the past.");
+        errs.push("Tanggal kirim tidak bisa di masa lalu.");
       }
     }
 
-    if (!fixedCustomer && (!customer || customer === "Select Customer")) {
-      errs.push("Please select a customer.");
+    if (!fixedCustomer && (!customer || customer === "Pilih Pelanggan")) {
+      errs.push("Pelanggan harus diisi.");
     }
 
     orders.forEach((order, idx) => {
-      if (!order.item || order.item === "Select Item") {
-        errs.push(`Order #${idx + 1}: Please select an item.`);
+      if (!order.item || order.item === "Pilih Sayur") {
+        errs.push(`Order #${idx + 1}: Item harus dipilih.`);
       }
       const qtyNum = Number(order.qty);
       if (!Number.isInteger(qtyNum) || qtyNum <= 0) {
-        errs.push(`Order #${idx + 1}: Quantity must be a positive integer.`);
+        errs.push(`Order #${idx + 1}: Jumlah harus bilangan bulat positif.`);
       }
     });
 
@@ -88,7 +88,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
   const getAvailableItems = (currentIndex: number) => {
     const selectedItems = orders.map((o) => o.item);
     return items.filter(
-      (item) => item === "Select Item" || item === orders[currentIndex].item || !selectedItems.includes(item)
+      (item) => item === "Pilih Sayur" || item === orders[currentIndex].item || !selectedItems.includes(item)
     );
   };
 
@@ -141,56 +141,61 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
         <h1 className="text-2xl font-bold">{formTitle}</h1>
       </div>
 
-      <h2 className="text-xl font-semibold mb-2">Order Veggies</h2>
       <form onSubmit={handleSubmitOrders} className="space-y-4 mb-8">
         <Field.Date
           value={deliveryDate}
           onChange={(e) => setDeliveryDate(e.target.value)}
-          className="w-full border rounded p-2"
+          label="Tanggal Pengiriman"
+          className="w-full"
         />
 
         {!fixedCustomer ? (
           <Field.Dropdown
             value={customer}
             onChange={(e) => setCustomer(e.target.value)}
-            className="w-full border rounded p-2"
             options={customers.map((c) => ({ label: c, value: c }))}
+            label="Pelanggan"
+            className="w-full"
           />
         ) : null}
 
         <h2 className="text-xl font-semibold mb-2">Detail Order</h2>
         {orders.map((order, index) => (
-          <div key={index} className="grid grid-cols-12 gap-1 items-center w-full">
-            <div className="col-span-12">
+          <div key={index} className="flex flex-col gap-1 w-full border border-gray-100 shadow-md rounded p-3">
+            <div className="w-full flex">
+              <h3 className="w-4/5 text-lg font-semibold mb-2">Order #{index + 1}</h3>
+              {orders.length > 1 && (
+                <Interactive.Button
+                  className="w-1/5 flex justify-center"
+                  type="button"
+                  variant="danger"
+                  onClick={() => handleRemoveOrder(index)}
+                >
+                  <X />
+                </Interactive.Button>
+              )}
+            </div>
+            <div className="w-full">
               <Field.Dropdown
                 value={order.item}
                 onChange={(e) => handleOrderChange(index, "item", e.target.value)}
-                className="border rounded p-2"
                 options={getAvailableItems(index).map((item) => ({
                   label: item,
                   value: item,
                 }))}
+                label="Jenis"
+                className="border rounded p-2"
               />
             </div>
-            <div className={orders.length > 1 ? "col-span-10" : "col-span-12"}>
+            <div className="w-full">
               <Field.Number
                 value={order.qty}
                 onChange={(val) => handleOrderChange(index, "qty", val)}
+                label="Jumlah"
                 placeholder="Jumlah"
                 suffix="kg"
               />
             </div>
-
-            {orders.length > 1 && (
-              <Interactive.Button
-                className="col-span-2 flex justify-center"
-                type="button"
-                variant="danger"
-                onClick={() => handleRemoveOrder(index)}
-              >
-                <Trash />
-              </Interactive.Button>
-            )}
           </div>
         ))}
 

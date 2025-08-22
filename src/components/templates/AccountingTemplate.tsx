@@ -7,7 +7,7 @@ import { Field } from "@/components/molecules/";
 import { Interactive } from "@/components/atoms/";
 import { useToastSuccess, useToastError } from "@/hooks/Toast";
 import { ToastContainer } from "react-toastify";
-import { Trash } from "lucide-react";
+import { X } from "lucide-react";
 
 type OperationalAccountingTemplateProps = {
   targetSheet?: string;
@@ -52,15 +52,15 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
     const errs: string[] = [];
 
     if (!tanggal) {
-      errs.push("Tanggal is required.");
+      errs.push("Tanggal harus diisi.");
     }
 
     entries.forEach((entry, idx) => {
       if (!entry.nominal || Number(entry.nominal) <= 0) {
-        errs.push(`Entry #${idx + 1}: Nominal must be greater than 0.`);
+        errs.push(`Entri #${idx + 1}: Nominal harus lebih besar dari 0.`);
       }
       if (!entry.keterangan || !subCategories.includes(entry.keterangan) || entry.keterangan === "Select Kategori") {
-        errs.push(`Entry #${idx + 1}: Invalid kategori selected.`);
+        errs.push(`Entri #${idx + 1}: Deskripsi harus dipilih.`);
       }
     });
 
@@ -114,48 +114,57 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
         <h1 className="text-2xl font-bold">{formTitle}</h1>
       </div>
 
-      <h2 className="text-xl font-semibold mb-2">Operational Accounting</h2>
       <form onSubmit={handleSubmitAll} className="space-y-4 mb-8">
-        {/* Batch Tanggal */}
-        <Field.Date value={tanggal} onChange={(e) => setTanggal(e.target.value)} />
+        <Field.Date
+          value={tanggal}
+          onChange={(e) => setTanggal(e.target.value)}
+          label="Tanggal Entri"
+          className="w-full"
+        />
 
-        <h2 className="text-xl font-semibold mb-2">Detail Entries</h2>
+        <h2 className="text-xl font-semibold mb-2">Detail Entri</h2>
         {entries.map((entry, id) => (
-          <div key={id} className="grid grid-cols-12 gap-1 items-center w-full">
-            <div className="col-span-12">
+          <div key={id} className="flex flex-col gap-1 w-full border border-gray-100 shadow-md rounded p-3">
+            <div className="w-full flex">
+              <h3 className="w-4/5 text-lg font-semibold mb-2">Entri #{id + 1}</h3>
+              {entries.length > 1 && (
+                <Interactive.Button
+                  className="w-1/5 flex justify-center"
+                  type="button"
+                  variant="danger"
+                  onClick={() => handleRemoveEntry(id)}
+                >
+                  <X />
+                </Interactive.Button>
+              )}
+            </div>
+            <div className="w-full">
               <Field.Dropdown
                 value={entry.keterangan}
                 onChange={(e) => handleEntryChange(id, "keterangan", e.target.value)}
                 options={subCategories.map((item) => ({ label: item, value: item }))}
+                label="Jenis"
               />
             </div>
-            <div className="col-span-12">
+            <div className="w-full">
               <Field.Text
                 value={entry.keteranganTambahan}
                 onChange={(e) => handleEntryChange(id, "keteranganTambahan", e.target.value)}
-                placeholder="Keterangan tambahan"
+                label="Keterangan"
+                placeholder="Keterangan Tambahan"
               />
             </div>
 
-            <div className={entries.length > 1 ? "col-span-10" : "col-span-12"}>
+            <div className="w-full">
               <Field.Number
                 value={entry.nominal}
                 onChange={(val) => handleEntryChange(id, "nominal", val)}
+                label="Nominal"
                 placeholder="Nominal"
                 prefix="Rp"
                 suffix=",-"
               />
             </div>
-            {entries.length > 1 && (
-              <Interactive.Button
-                className="col-span-2 flex justify-center"
-                type="button"
-                variant="danger"
-                onClick={() => handleRemoveEntry(id)}
-              >
-                <Trash />
-              </Interactive.Button>
-            )}
           </div>
         ))}
 
@@ -169,7 +178,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
         </div>
       </form>
 
-      <ToastContainer position="bottom-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" className="gap-2 md:gap-0 p-2 md:p-0" autoClose={3000} />
     </div>
   );
 };

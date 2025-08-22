@@ -36,7 +36,7 @@ export const Number: React.FC<NumberProps> = ({
       <div
         className={`flex items-center rounded bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 ${rest.className || ""} ${prefix ? "pl-3" : ""} ${suffix ? "pr-3" : ""}`}
       >
-        {prefix && <span className="text-gray-600 w-1/12">{prefix}</span>}
+        {prefix && <span className="text-gray-600 w-1/12 text-left">{prefix}</span>}
         <Input.Input
           id={id}
           type="text" // must be text, not number
@@ -45,7 +45,7 @@ export const Number: React.FC<NumberProps> = ({
           onChange={handleChange}
           {...rest}
         />
-        {suffix && <span className="text-gray-600 w-2/12">{suffix}</span>}
+        {suffix && <span className="text-gray-600 w-2/12 text-right">{suffix}</span>}
       </div>
     </Container.Field>
   );
