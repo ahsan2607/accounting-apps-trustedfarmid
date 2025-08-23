@@ -1,12 +1,12 @@
-import { ClipboardList, Package, ShoppingCart, Store, Users } from "lucide-react";
+import { ClipboardList, Users } from "lucide-react";
 import Link from "next/link";
 
 const menuItems = [
-  { name: "Inventory Accounting", icon: Package, href: "/dashboard/cashflow-statements/inventory-accounting" },
-  { name: "Operator Accounting", icon: Users, href: "/dashboard/cashflow-statements/operator-accounting" },
+  // { name: "Inventory Accounting", icon: Package, href: "/dashboard/cashflow-statements/inventory-accounting" },
+  { name: "Main Accounting", icon: Users, href: "/dashboard/cashflow-statements/operator-accounting" },
   { name: "Operational Accounting", icon: ClipboardList, href: "/dashboard/cashflow-statements/operational-accounting" },
-  { name: "Veggies Order", icon: ShoppingCart, href: "/dashboard/cashflow-statements/veggies-order" },
-  { name: "Market Veggies Order", icon: Store, href: "/dashboard/cashflow-statements/market-veggies-order" },
+  // { name: "Veggies Order", icon: ShoppingCart, href: "/dashboard/cashflow-statements/veggies-order" },
+  // { name: "Market Veggies Order", icon: Store, href: "/dashboard/cashflow-statements/market-veggies-order" },
 ];
 
 export default function Home() {

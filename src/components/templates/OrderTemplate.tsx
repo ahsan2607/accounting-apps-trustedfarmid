@@ -29,7 +29,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> = ({ fixedCustomer, tar
   const router = useRouter();
 
   useEffect(() => {
-    if (!localStorage.getItem("authenticated")) {
+    if (!localStorage.getItem("trusted-farm-id-accounting-app-authenticated")) {
       router.push("/login");
       return;
     }

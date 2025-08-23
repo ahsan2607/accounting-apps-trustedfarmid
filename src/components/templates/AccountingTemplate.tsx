@@ -28,7 +28,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
   const router = useRouter();
 
   useEffect(() => {
-    if (!localStorage.getItem("authenticated")) {
+    if (!localStorage.getItem("trusted-farm-id-accounting-app-authenticated")) {
       router.push("/login");
       return;
     }

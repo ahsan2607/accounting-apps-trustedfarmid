@@ -28,8 +28,8 @@ export default function Login() {
         body: JSON.stringify(sessionData),
       });
       if (setSessionRes.ok) {
-        localStorage.setItem('trusted-farm-id-accounting-app', username);
-        localStorage.setItem('authenticated', 'true');
+        localStorage.setItem('trusted-farm-id-accounting-app-username', username);
+        localStorage.setItem('trusted-farm-id-accounting-app-authenticated', 'true');
         router.push('/dashboard');
       } else {
         setError('Session setup failed');
