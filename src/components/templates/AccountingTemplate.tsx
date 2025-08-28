@@ -1,24 +1,23 @@
 "use client";
 import { useEffect, useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { getKategoriData, submitFormOperationalAccounting } from "@/libraries/api";
-import { OperationalAccountingData } from "@/types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getAccountingCategoryData, submitFormOperationalAccounting } from "@/libraries/api";
+import { KategoriData, OperationalAccountingData } from "@/types";
 import { Field } from "@/components/molecules/";
 import { Interactive } from "@/components/atoms/";
 import { useToastSuccess, useToastError } from "@/hooks/Toast";
 import { ToastContainer } from "react-toastify";
 import { X } from "lucide-react";
 
-type OperationalAccountingTemplateProps = {
-  targetSheet?: string;
-  formTitle: string;
-};
-
-export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = ({ targetSheet, formTitle }) => {
-  const [subCategories, setSubCategories] = useState<string[]>([]);
+export const AccountingTemplate: React.FC = () => {
+  const [subCategories, setSubCategories] = useState<KategoriData[]>([]);
   const [tanggal, setTanggal] = useState<string>("");
   const [entries, setEntries] = useState<Omit<OperationalAccountingData, "tanggal">[]>([
-    { nominal: "", keterangan: "", keteranganTambahan: "" },
+    {
+      nominal: "",
+      keterangan: { transactionId: "", accountName: "", accountType: "", statementType: "", subCategory: "" },
+      keteranganTambahan: "",
+    },
   ]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -26,6 +25,10 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
   const showErrorToast = useToastError();
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const formAccount = searchParams.get("account") || "";
+  const formName = searchParams.get("name") || "";
 
   useEffect(() => {
     if (!localStorage.getItem("trusted-farm-id-accounting-app-authenticated")) {
@@ -35,9 +38,12 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
 
     const fetchData = async () => {
       try {
-        const kategoriRes = await getKategoriData();
-        if (kategoriRes.success) {
-          setSubCategories(["Select Kategori", ...Object.keys(kategoriRes.data || {}).sort()]);
+        const kategoriRes = await getAccountingCategoryData(formAccount);
+        if (kategoriRes.success && kategoriRes.data) {
+          setSubCategories([
+            { transactionId: "", accountName: "", accountType: "", statementType: "", subCategory: "Select Kategori" },
+            ...Object.values(kategoriRes.data).sort((a, b) => a.subCategory.localeCompare(b.subCategory)),
+          ]);
         } else {
           showErrorToast("Failed to fetch kategori data");
         }
@@ -46,7 +52,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       }
     };
     fetchData();
-  }, [router, showErrorToast]);
+  }, [formAccount, router, showErrorToast]);
 
   const validateForm = () => {
     const errs: string[] = [];
@@ -59,25 +65,40 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       if (!entry.nominal || Number(entry.nominal) <= 0) {
         errs.push(`Entri #${idx + 1}: Nominal harus lebih besar dari 0.`);
       }
-      if (!entry.keterangan || !subCategories.includes(entry.keterangan) || entry.keterangan === "Select Kategori") {
+      if (!entry.keterangan.subCategory || entry.keterangan.subCategory === "Select Kategori") {
         errs.push(`Entri #${idx + 1}: Deskripsi harus dipilih.`);
       }
-      if (!entry.keteranganTambahan && entry.keterangan === "Lainnya") {
-        errs.push(`Keterangan harus diisi`);
+      if (!entry.keteranganTambahan && entry.keterangan.subCategory === "Lainnya") {
+        errs.push(`Entri #${idx + 1}: Keterangan harus diisi`);
       }
     });
 
     return errs;
   };
 
-  const handleEntryChange = (index: number, field: keyof Omit<OperationalAccountingData, "tanggal">, value: string) => {
+  const handleEntryChange = (
+    index: number,
+    field: keyof Omit<OperationalAccountingData, "tanggal">,
+    value: string | KategoriData
+  ) => {
     const newEntries = [...entries];
-    newEntries[index] = { ...newEntries[index], [field]: value };
+    if (field === "keterangan") {
+      newEntries[index] = { ...newEntries[index], keterangan: value as KategoriData };
+    } else {
+      newEntries[index] = { ...newEntries[index], [field]: value };
+    }
     setEntries(newEntries);
   };
 
   const handleAddEntry = () => {
-    setEntries([...entries, { nominal: "", keterangan: "", keteranganTambahan: "" }]);
+    setEntries([
+      ...entries,
+      {
+        nominal: "",
+        keterangan: { transactionId: "", accountName: "", accountType: "", statementType: "", subCategory: "" },
+        keteranganTambahan: "",
+      },
+    ]);
   };
 
   const handleRemoveEntry = (index: number) => {
@@ -99,13 +120,24 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
       tanggal,
     }));
 
-    const response = await submitFormOperationalAccounting(tanggal, entriesWithDate, targetSheet);
+    const response = await submitFormOperationalAccounting(
+      formAccount,
+      tanggal,
+      entriesWithDate,
+      `${formName.split("%20")} Ledger`
+    );
     setLoading(false);
 
     if (response.success) {
       showSuccessToast(response.data || "All entries submitted successfully");
       setTanggal("");
-      setEntries([{ nominal: "", keterangan: "", keteranganTambahan: "" }]);
+      setEntries([
+        {
+          nominal: "",
+          keterangan: { transactionId: "", accountName: "", accountType: "", statementType: "", subCategory: "" },
+          keteranganTambahan: "",
+        },
+      ]);
     } else {
       showErrorToast(response.error || "Failed to submit entries");
     }
@@ -114,7 +146,7 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">{formTitle}</h1>
+        <h1 className="text-2xl font-bold">Accounting - {formName}</h1>
       </div>
 
       <form onSubmit={handleSubmitAll} className="space-y-4 mb-8">
@@ -143,9 +175,14 @@ export const AccountingTemplate: React.FC<OperationalAccountingTemplateProps> = 
             </div>
             <div className="w-full">
               <Field.Dropdown
-                value={entry.keterangan}
-                onChange={(e) => handleEntryChange(id, "keterangan", e.target.value)}
-                options={subCategories.map((item) => ({ label: item, value: item }))}
+                value={entry.keterangan.subCategory}
+                onChange={(e) => {
+                  const selectedCategory = subCategories.find((cat) => cat.subCategory === e.target.value);
+                  if (selectedCategory) {
+                    handleEntryChange(id, "keterangan", selectedCategory);
+                  }
+                }}
+                options={subCategories.map((item) => ({ label: item.subCategory, value: item.subCategory }))}
                 label="Jenis"
               />
             </div>

@@ -2,7 +2,6 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/atoms/interactive/Button";
-// import { logout } from "@/libraries/api";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -13,14 +12,28 @@ export default function DashboardLayout({
 }>) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loggedUser, setLoggedUser] = useState("User");
+  const [loggedUser, setLoggedUser] = useState<string>("User");
+  const [roles, setRoles] = useState<string>("Roles");
 
   useEffect(() => {
-    // This code only runs in the browser
-    const user = localStorage.getItem("trusted-farm-id-accounting-app-username");
-    if (user) {
-      setLoggedUser(user);
+    async function fetchSession() {
+      try {
+        const response = await fetch("/api/get-session", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const session = await response.json();
+          setLoggedUser(session.data.username);
+          setRoles(session.data.role);
+        } else {
+          console.error("Failed to fetch session:", await response.text());
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      }
     }
+    fetchSession();
   }, []);
 
   const handleLogout = async () => {
@@ -31,26 +44,26 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <header>
+    <>
+      <header className="sticky top-0 z-50">
         <div className="flex justify-between items-center bg-blue-400 shadow px-4 py-3 relative z-10">
-          {pathname !== "/dashboard" ? (
-            <Link href="/dashboard" className="flex items-center gap-2 rounded-lg hover:bg-gray-200 transition">
-              <ChevronLeft className="w-5 h-5" />
-            </Link>
-          ) : null}
-          <div className="text-right">
-            <p className="text-black">{loggedUser}</p>
-            <p className="text-white text-sm">{loggedUser}</p>
+          <div className="flex gap-3 text-left">
+            {pathname !== "/dashboard" ? (
+              <Link href="/dashboard" className="flex items-center gap-2 rounded-lg hover:bg-gray-200 transition">
+                <ChevronLeft className="w-5 h-5" />
+              </Link>
+            ) : null}
+            <div>
+              <p className="text-black">{loggedUser}</p>
+              <p className="text-white text-sm">{roles.split(",").join(", ")}</p>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-between items-center bg-white shadow px-4 py-2 relative z-0 ">
           <Button onClick={handleLogout} variant="danger">
             Logout
           </Button>
         </div>
       </header>
       <main className="p-4 min-h-screen">{children}</main>
-    </div>
+    </>
   );
 }

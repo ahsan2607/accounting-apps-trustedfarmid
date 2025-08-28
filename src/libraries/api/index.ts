@@ -1,6 +1,6 @@
 // ./src/libraries/api/index.ts (Next.js)
 import axios, { AxiosError } from 'axios';
-import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody } from '@/types';
+import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody, LoginData } from '@/types';
 
 const API_URL = '/api/proxy';
 
@@ -10,9 +10,9 @@ const api = axios.create({
   withCredentials: true, // For cookies
 });
 
-export const checkLogin = async (username: string, password: string): Promise<ApiResponse<{ coaID: string; username: string }>> => {
+export const checkLogin = async (username: string, password: string): Promise<ApiResponse<LoginData>> => {
   try {
-    const response = await api.post<ApiResponse<{ coaID: string; username: string }>>('', {
+    const response = await api.post<ApiResponse<LoginData>>('', {
       action: 'checkLogin',
       username,
       password,
@@ -43,9 +43,9 @@ export const getItemList = async (): Promise<ApiResponse<string[]>> => {
   }
 };
 
-export const getKategoriData = async (): Promise<ApiResponse<KategoriData>> => {
+export const getAccountingCategoryData = async (account: string): Promise<ApiResponse<KategoriData>> => {
   try {
-    const response = await api.post<ApiResponse<KategoriData>>('', { action: 'getKategoriData' } satisfies ProxyRequestBody);
+    const response = await api.post<ApiResponse<KategoriData>>('', { action: 'getAccountingCategoryData', account } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {
     return handleError(error);
@@ -67,6 +67,7 @@ export const submitOrders = async (deliveryDate: string, orders: Order[], sheet:
 };
 
 export const submitFormOperationalAccounting = async (
+  account: string,
   entryDate: string,
   entries: OperationalAccountingData[],
   sheetTarget?: string
@@ -74,6 +75,7 @@ export const submitFormOperationalAccounting = async (
   try {
     const response = await api.post<ApiResponse<string>>('', {
       action: 'submitFormOperationalAccounting',
+      account,
       entryDate,
       entries,
       sheet: sheetTarget ?? '',

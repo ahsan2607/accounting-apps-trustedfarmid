@@ -12,14 +12,30 @@ export interface Order {
 
 export interface OperationalAccountingData {
   tanggal: string;
-//   kategori: string;
+  //   kategori: string;
   nominal: string;
-  keterangan: string;
+  keterangan: KategoriData;
   keteranganTambahan: string;
 }
 
 export interface KategoriData {
-  [subCategory: string]: string; // Maps subCategory to COA ID
+  transactionId: string,
+  accountName: string,
+  accountType: string,
+  statementType: string,
+  subCategory: string,
+}
+
+export interface LoginData {
+  id: string;
+  username: string;
+  role: string;
+  accessibleAccounts: AccessibleAccount[];
+}
+
+export interface AccessibleAccount {
+  id: string;
+  name: string;
 }
 
 export interface LogoutResponse {
@@ -28,7 +44,7 @@ export interface LogoutResponse {
 
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getKategoriData' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
   username?: string;
   password?: string;
   deliveryDate?: string;
@@ -36,6 +52,7 @@ export interface ProxyRequestBody {
   entryDate?: string;
   entries?: Omit<OperationalAccountingData, "keteranganTambahan">[]
   sheet?: string;
+  account?: string;
   tanggal?: string;
   kategori?: string;
   nominal?: string;

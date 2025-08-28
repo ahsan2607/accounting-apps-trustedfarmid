@@ -8,7 +8,7 @@ const API_KEY = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as ProxyRequestBody;
-  
+
   if (body.action !== 'checkLogin') {
     const sessionCookie = req.cookies.get('trusted-farm-session')?.value;
     if (!sessionCookie) {
@@ -55,7 +55,11 @@ export async function POST(req: NextRequest) {
       });
       return nextResponse;
     }
-    return NextResponse.json(response.data, { status: response.status });
+    if (response.data.error) {
+      return NextResponse.json({ success: false, error: response.data.error });
+    } else {
+      return NextResponse.json(response.data, { status: response.status });
+    }
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(

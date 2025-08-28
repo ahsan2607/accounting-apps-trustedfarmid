@@ -1,41 +1,47 @@
 // ./src/app/login/page.tsx (Next.js)
 "use client";
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { checkLogin } from '@/libraries/api';
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { checkLogin } from "@/libraries/api";
+import { useToastError, useToastSuccess } from "@/hooks/Toast";
+import { ToastContainer } from "react-toastify";
 
 export default function Login() {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
+
+  const showSuccessToast = useToastSuccess();
+  const showErrorToast = useToastError();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
     const response = await checkLogin(username, password);
+    console.log(response)
     if (response.success && response.data) {
-      // Set session cookie via fetch to a new API route
       const sessionData = {
         authenticated: true,
-        coaID: response.data.coaID,
+        id: response.data.id,
         username: response.data.username,
+        role: response.data.role,
+        accessibleAccounts: response.data.accessibleAccounts,
         loginTime: new Date().toISOString(),
       };
-      const setSessionRes = await fetch('/api/set-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const setSessionRes = await fetch("/api/set-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sessionData),
       });
-      if (setSessionRes.ok) {
-        localStorage.setItem('trusted-farm-id-accounting-app-username', username);
-        localStorage.setItem('trusted-farm-id-accounting-app-authenticated', 'true');
-        router.push('/dashboard');
+      if (setSessionRes.ok && response.success) {
+        showSuccessToast("Login successful");
+        localStorage.setItem("trusted-farm-id-accounting-app-username", username);
+        localStorage.setItem("trusted-farm-id-accounting-app-authenticated", "true");
+        router.push("/dashboard");
       } else {
-        setError('Session setup failed');
+        showErrorToast(response.error || "Login failed");
       }
     } else {
-      setError(response.error || 'Login failed');
+      showErrorToast(response.error || "Login failed");
     }
   };
 
@@ -67,7 +73,7 @@ export default function Login() {
           Login
         </button>
       </form>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      <ToastContainer position="bottom-right" className="gap-2 md:gap-0 p-2 md:p-0" autoClose={3000} />
     </div>
   );
 }
