@@ -38,13 +38,18 @@ export interface AccessibleAccount {
   name: string;
 }
 
+export interface TransferableAccount {
+  id: string;
+  name: string;
+}
+
 export interface LogoutResponse {
   message: string;
 }
 
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' |'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
   username?: string;
   password?: string;
   deliveryDate?: string;

@@ -1,6 +1,6 @@
 // ./src/libraries/api/index.ts (Next.js)
 import axios, { AxiosError } from 'axios';
-import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody, LoginData } from '@/types';
+import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody, LoginData, TransferableAccount } from '@/types';
 
 const API_URL = '/api/proxy';
 
@@ -52,6 +52,15 @@ export const getAccountingCategoryData = async (account: string): Promise<ApiRes
   }
 };
 
+export const getAccountingTransferableAccounts = async (account: string): Promise<ApiResponse<TransferableAccount>> => {
+  try {
+    const response = await api.post<ApiResponse<TransferableAccount>>('', { action: 'getAccountingTransferableAccounts', account } satisfies ProxyRequestBody);
+    return response.data;
+  } catch (error: unknown) {
+    return handleError(error);
+  }
+};
+
 export const submitOrders = async (deliveryDate: string, orders: Order[], sheet: string): Promise<ApiResponse<string>> => {
   try {
     const response = await api.post<ApiResponse<string>>('', {
@@ -70,7 +79,6 @@ export const submitFormOperationalAccounting = async (
   account: string,
   entryDate: string,
   entries: OperationalAccountingData[],
-  sheetTarget?: string
 ): Promise<ApiResponse<string>> => {
   try {
     const response = await api.post<ApiResponse<string>>('', {
@@ -78,7 +86,6 @@ export const submitFormOperationalAccounting = async (
       account,
       entryDate,
       entries,
-      sheet: sheetTarget ?? '',
     } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {

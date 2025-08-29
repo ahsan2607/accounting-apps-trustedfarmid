@@ -1,8 +1,12 @@
 "use client";
 import { useEffect, useState, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAccountingCategoryData, submitFormOperationalAccounting } from "@/libraries/api";
-import { KategoriData, OperationalAccountingData } from "@/types";
+import {
+  getAccountingCategoryData,
+  getAccountingTransferableAccounts,
+  submitFormOperationalAccounting,
+} from "@/libraries/api";
+import { KategoriData, OperationalAccountingData, TransferableAccount } from "@/types";
 import { Field } from "@/components/molecules/";
 import { Interactive } from "@/components/atoms/";
 import { useToastSuccess, useToastError } from "@/hooks/Toast";
@@ -11,6 +15,7 @@ import { X } from "lucide-react";
 
 export const AccountingTemplate: React.FC = () => {
   const [subCategories, setSubCategories] = useState<KategoriData[]>([]);
+  const [transferableAccounts, setTransferableAccounts] = useState<TransferableAccount[]>([]);
   const [tanggal, setTanggal] = useState<string>("");
   const [entries, setEntries] = useState<Omit<OperationalAccountingData, "tanggal">[]>([
     {
@@ -47,6 +52,15 @@ export const AccountingTemplate: React.FC = () => {
         } else {
           showErrorToast("Failed to fetch kategori data");
         }
+        const transferable = await getAccountingTransferableAccounts(formAccount);
+        if (transferable.success && transferable.data) {
+          setTransferableAccounts([
+            { id: "", name: "Select Account Target" },
+            ...Object.values(transferable.data).sort((a, b) => a.name.localeCompare(b.name)),
+          ]);
+        } else {
+          showErrorToast("Failed to fetch transferable data");
+        }
       } catch {
         showErrorToast("Failed to fetch data");
       }
@@ -71,6 +85,13 @@ export const AccountingTemplate: React.FC = () => {
       if (!entry.keteranganTambahan && entry.keterangan.subCategory === "Lainnya") {
         errs.push(`Entri #${idx + 1}: Keterangan harus diisi`);
       }
+      if (entry.keterangan.subCategory === "Transfer") {
+        const validIds = transferableAccounts.map((acc) => acc.id);
+
+        if (!entry.keterangan.transactionId || !validIds.includes(entry.keterangan.transactionId)) {
+          errs.push(`Entri #${idx + 1}: Target transaksi harus dipilih.`);
+        }
+      }
     });
 
     return errs;
@@ -78,12 +99,17 @@ export const AccountingTemplate: React.FC = () => {
 
   const handleEntryChange = (
     index: number,
-    field: keyof Omit<OperationalAccountingData, "tanggal">,
+    field: keyof Omit<OperationalAccountingData, "tanggal"> | "transactionId",
     value: string | KategoriData
   ) => {
     const newEntries = [...entries];
     if (field === "keterangan") {
       newEntries[index] = { ...newEntries[index], keterangan: value as KategoriData };
+    } else if (field === "transactionId") {
+      newEntries[index] = {
+        ...newEntries[index],
+        keterangan: { ...newEntries[index].keterangan, transactionId: value as string },
+      };
     } else {
       newEntries[index] = { ...newEntries[index], [field]: value };
     }
@@ -120,12 +146,13 @@ export const AccountingTemplate: React.FC = () => {
       tanggal,
     }));
 
-    const response = await submitFormOperationalAccounting(
+    console.log({
       formAccount,
       tanggal,
       entriesWithDate,
-      `${formName.split("%20")} Ledger`
-    );
+    });
+
+    const response = await submitFormOperationalAccounting(formAccount, tanggal, entriesWithDate);
     setLoading(false);
 
     if (response.success) {
@@ -142,6 +169,46 @@ export const AccountingTemplate: React.FC = () => {
       showErrorToast(response.error || "Failed to submit entries");
     }
   };
+
+  // Count transferable slots (exclude default "")
+  const transferableSlots = transferableAccounts.filter((acc) => acc.id !== "").length;
+
+  // Compute max entries
+  const maxEntries =
+    subCategories.filter((c) => c.subCategory !== "Select Kategori" && c.subCategory !== "Transfer").length +
+    transferableSlots;
+
+  // Get available transfer targets for an entry
+  const getAvailableTransferTargets = (currentIndex: number) => {
+    const selectedTargets = entries.map((e) => e.keterangan.transactionId);
+    return transferableAccounts.filter(
+      (acc) =>
+        acc.id === "" || // dummy is always there
+        acc.id === entries[currentIndex].keterangan.transactionId || // keep current
+        !selectedTargets.includes(acc.id) // prevent duplicates
+    );
+  };
+
+  // Get available categories for an entry
+  const getAvailableCategories = (currentIndex: number) => {
+  const selectedCategories = entries.map(e => e.keterangan.subCategory);
+
+  // count how many entries are using "Transfer"
+  const usedTransferCount = selectedCategories.filter(c => c === "Transfer").length;
+
+  // how many transfer slots available
+  const transferableSlots = transferableAccounts.filter(acc => acc.id !== "").length;
+
+  const hasTransferSlots = usedTransferCount < transferableSlots;
+
+  return subCategories.filter(cat => {
+    if (cat.subCategory === "Select Kategori") return true;
+    // always allow the one currently selected (so it won’t vanish from dropdown)
+    if (cat.subCategory === entries[currentIndex].keterangan.subCategory) return true;
+    if (cat.subCategory === "Transfer") return hasTransferSlots;
+    return !selectedCategories.includes(cat.subCategory);
+  });
+};
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -182,10 +249,24 @@ export const AccountingTemplate: React.FC = () => {
                     handleEntryChange(id, "keterangan", selectedCategory);
                   }
                 }}
-                options={subCategories.map((item) => ({ label: item.subCategory, value: item.subCategory }))}
+                options={getAvailableCategories(id).map((item) => ({
+                  label: item.subCategory,
+                  value: item.subCategory,
+                }))}
                 label="Jenis"
               />
             </div>
+            {entry.keterangan.subCategory === "Transfer" && (
+              <Field.Dropdown
+                value={entry.keterangan.transactionId}
+                onChange={(e) => handleEntryChange(id, "transactionId", e.target.value)}
+                options={getAvailableTransferTargets(id).map((acc) => ({
+                  label: acc.name,
+                  value: acc.id,
+                }))}
+                label="Target Transaksi"
+              />
+            )}
             <div className="w-full">
               <Field.Number
                 value={entry.nominal}
@@ -208,9 +289,11 @@ export const AccountingTemplate: React.FC = () => {
         ))}
 
         <div className="flex space-x-2">
-          <Interactive.Button type="button" onClick={handleAddEntry} variant="secondary">
-            Add Entry
-          </Interactive.Button>
+          {entries.length < maxEntries && (
+            <Interactive.Button type="button" onClick={handleAddEntry} variant="secondary">
+              Add Entry
+            </Interactive.Button>
+          )}
           <Interactive.Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Submitting..." : "Submit All Entries"}
           </Interactive.Button>
