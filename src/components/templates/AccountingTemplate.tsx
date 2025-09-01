@@ -171,12 +171,12 @@ export const AccountingTemplate: React.FC = () => {
   };
 
   // Count transferable slots (exclude default "")
-  const transferableSlots = transferableAccounts.filter((acc) => acc.id !== "").length;
+  // const transferableSlots = transferableAccounts.filter((acc) => acc.id !== "").length;
 
   // Compute max entries
-  const maxEntries =
-    subCategories.filter((c) => c.subCategory !== "Select Kategori" && c.subCategory !== "Transfer").length +
-    transferableSlots;
+  // const maxEntries =
+  //   subCategories.filter((c) => c.subCategory !== "Select Kategori" && c.subCategory !== "Transfer").length +
+  //   transferableSlots;
 
   // Get available transfer targets for an entry
   const getAvailableTransferTargets = (currentIndex: number) => {
@@ -191,24 +191,27 @@ export const AccountingTemplate: React.FC = () => {
 
   // Get available categories for an entry
   const getAvailableCategories = (currentIndex: number) => {
-  const selectedCategories = entries.map(e => e.keterangan.subCategory);
+    const selectedCategories = entries.map((e) => e.keterangan.subCategory);
 
-  // count how many entries are using "Transfer"
-  const usedTransferCount = selectedCategories.filter(c => c === "Transfer").length;
+    // count how many entries are using "Transfer"
+    const usedTransferCount = selectedCategories.filter((c) => c === "Transfer").length;
 
-  // how many transfer slots available
-  const transferableSlots = transferableAccounts.filter(acc => acc.id !== "").length;
+    // how many transfer slots available
+    const transferableSlots = transferableAccounts.filter((acc) => acc.id !== "").length;
+    const hasTransferSlots = usedTransferCount < transferableSlots;
 
-  const hasTransferSlots = usedTransferCount < transferableSlots;
-
-  return subCategories.filter(cat => {
-    if (cat.subCategory === "Select Kategori") return true;
-    // always allow the one currently selected (so it won’t vanish from dropdown)
-    if (cat.subCategory === entries[currentIndex].keterangan.subCategory) return true;
-    if (cat.subCategory === "Transfer") return hasTransferSlots;
-    return !selectedCategories.includes(cat.subCategory);
-  });
-};
+    return subCategories.filter((cat) => {
+      if (cat.subCategory === "Select Kategori") return true;
+      if (cat.subCategory === "Beli Aset") return true;
+      if (cat.subCategory === "Belanja dari Petani") return true;
+      if (cat.subCategory === "Belanja dari Pasar") return true;
+      if (cat.subCategory === "Retail Income") return true;
+      // always allow the one currently selected (so it won’t vanish from dropdown)
+      if (cat.subCategory === entries[currentIndex].keterangan.subCategory) return true;
+      if (cat.subCategory === "Transfer") return hasTransferSlots;
+      return !selectedCategories.includes(cat.subCategory);
+    });
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -289,11 +292,14 @@ export const AccountingTemplate: React.FC = () => {
         ))}
 
         <div className="flex space-x-2">
-          {entries.length < maxEntries && (
+          {/* {entries.length < maxEntries && (
             <Interactive.Button type="button" onClick={handleAddEntry} variant="secondary">
               Add Entry
             </Interactive.Button>
-          )}
+          )} */}
+          <Interactive.Button type="button" onClick={handleAddEntry} variant="secondary">
+            Add Entry
+          </Interactive.Button>
           <Interactive.Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Submitting..." : "Submit All Entries"}
           </Interactive.Button>

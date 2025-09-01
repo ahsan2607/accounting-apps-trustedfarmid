@@ -1,6 +1,6 @@
 // ./src/libraries/api/index.ts (Next.js)
 import axios, { AxiosError } from 'axios';
-import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody, LoginData, TransferableAccount } from '@/types';
+import { ApiResponse, Order, OperationalAccountingData, KategoriData, ProxyRequestBody, LoginData, TransferableAccount, LedgerData } from '@/types';
 
 const API_URL = '/api/proxy';
 
@@ -86,6 +86,18 @@ export const submitFormOperationalAccounting = async (
       account,
       entryDate,
       entries,
+    } satisfies ProxyRequestBody);
+    return response.data;
+  } catch (error: unknown) {
+    return handleError(error);
+  }
+};
+
+export const getLedgerData = async (sheet: string): Promise<ApiResponse<LedgerData[]>> => {
+  try {
+    const response = await api.post<ApiResponse<LedgerData[]>>('', {
+      action: 'getLedgerData',
+      sheet,
     } satisfies ProxyRequestBody);
     return response.data;
   } catch (error: unknown) {

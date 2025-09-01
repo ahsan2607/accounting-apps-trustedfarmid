@@ -1,12 +1,13 @@
 // ./src/app/dashboard/page.tsx
 "use client";
 import { AccessibleAccount } from "@/types";
-import { Users } from "lucide-react";
+import { Coins, Table } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const menuItems = [
-  { name: "Accounting", icon: Users, href: "/dashboard/cashflow-statements/accounting" },
+  { name: "Accounting", icon: Coins, href: "/dashboard/cashflow-statements/accounting" },
+  { name: "Ledger", icon: Table, href: "/dashboard/cashflow-statements/ledger" },
 ];
 
 export default function Home() {

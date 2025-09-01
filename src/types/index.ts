@@ -47,9 +47,17 @@ export interface LogoutResponse {
   message: string;
 }
 
+export interface LedgerData {
+  date: string;
+  description: string;
+  additionalDescription: string;
+  credit: number;
+  debit: number;
+}
+
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' |'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated' | 'getLedgerData';
   username?: string;
   password?: string;
   deliveryDate?: string;
