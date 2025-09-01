@@ -8,7 +8,7 @@ import {
 } from "@/libraries/api";
 import { KategoriData, OperationalAccountingData, TransferableAccount } from "@/types";
 import { Field } from "@/components/molecules/";
-import { Interactive } from "@/components/atoms/";
+import { Interactive, Visual } from "@/components/atoms/";
 import { useToastSuccess, useToastError } from "@/hooks/Toast";
 import { ToastContainer } from "react-toastify";
 import { X } from "lucide-react";
@@ -24,7 +24,8 @@ export const AccountingTemplate: React.FC = () => {
       keteranganTambahan: "",
     },
   ]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
+  const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
   const showSuccessToast = useToastSuccess();
   const showErrorToast = useToastError();
@@ -63,6 +64,8 @@ export const AccountingTemplate: React.FC = () => {
         }
       } catch {
         showErrorToast("Failed to fetch data");
+      } finally {
+        setLoadingData(false);
       }
     };
     fetchData();
@@ -140,7 +143,7 @@ export const AccountingTemplate: React.FC = () => {
       return;
     }
 
-    setLoading(true);
+    setLoadingSubmit(true);
     const entriesWithDate: OperationalAccountingData[] = entries.map((e) => ({
       ...e,
       tanggal,
@@ -153,7 +156,7 @@ export const AccountingTemplate: React.FC = () => {
     });
 
     const response = await submitFormOperationalAccounting(formAccount, tanggal, entriesWithDate);
-    setLoading(false);
+    setLoadingSubmit(false);
 
     if (response.success) {
       showSuccessToast(response.data || "All entries submitted successfully");
@@ -212,6 +215,8 @@ export const AccountingTemplate: React.FC = () => {
       return !selectedCategories.includes(cat.subCategory);
     });
   };
+
+  if (loadingData) return <Visual.Spinner />;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -300,8 +305,8 @@ export const AccountingTemplate: React.FC = () => {
           <Interactive.Button type="button" onClick={handleAddEntry} variant="secondary">
             Add Entry
           </Interactive.Button>
-          <Interactive.Button type="submit" variant="primary" disabled={loading}>
-            {loading ? "Submitting..." : "Submit All Entries"}
+          <Interactive.Button type="submit" variant="primary" disabled={loadingSubmit}>
+            {loadingSubmit ? "Submitting..." : "Submit All Entries"}
           </Interactive.Button>
         </div>
       </form>

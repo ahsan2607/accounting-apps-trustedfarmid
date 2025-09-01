@@ -38,6 +38,11 @@ export interface AccessibleAccount {
   name: string;
 }
 
+export interface ledgerAccounts {
+  id: string;
+  name: string;
+}
+
 export interface TransferableAccount {
   id: string;
   name: string;
@@ -57,7 +62,7 @@ export interface LedgerData {
 
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated' | 'getLedgerData';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated' | 'getLedgerData' | 'getAllLedgerAccounts';
   username?: string;
   password?: string;
   deliveryDate?: string;
