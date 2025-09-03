@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse, ProxyRequestBody } from '@/types';
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzf9lxmxRXyf0hapV0GXaGAdA7flFj5-vw7iAGzFu2I1E3M57ZzMJnp5qoypvNADrnL/exec';
-const API_KEY = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+const APPS_SCRIPT_URL = process.env.API_URL || "";
+const API_KEY = process.env.API_KEY || "";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as ProxyRequestBody;
