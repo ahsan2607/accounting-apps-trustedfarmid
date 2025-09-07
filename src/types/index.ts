@@ -53,11 +53,15 @@ export interface LogoutResponse {
 }
 
 export interface LedgerData {
-  date: string;
-  description: string;
-  additionalDescription: string;
-  credit: number;
-  debit: number;
+  ledgerRows: {
+    date: string;
+    description: string;
+    additionalDescription: string;
+    credit: number;
+    debit: number;
+    balanceChange: number;
+  }[];
+  lastBalance: number
 }
 
 // Type for proxy request body (matches Apps Script doPost input)

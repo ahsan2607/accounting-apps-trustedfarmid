@@ -102,9 +102,9 @@ export const submitFormOperationalAccounting = async (
   }
 };
 
-export const getLedgerData = async (sheet: string): Promise<ApiResponse<LedgerData[]>> => {
+export const getLedgerData = async (sheet: string): Promise<ApiResponse<LedgerData>> => {
   try {
-    const response = await api.post<ApiResponse<LedgerData[]>>('', {
+    const response = await api.post<ApiResponse<LedgerData>>('', {
       action: 'getLedgerData',
       sheet,
     } satisfies ProxyRequestBody);
