@@ -52,7 +52,7 @@ export const LedgerTemplate: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       <div className="mb-4">
         <h1 className="text-2xl font-bold">{ledgerName} ledger</h1>
-        <h2 className="text-xl font-bold">Balance: Rp. {data.lastBalance.toLocaleString("id-ID")} ,-</h2>
+        <h2 className="text-xl font-bold">Saldo: Rp. {data.lastBalance.toLocaleString("id-ID")} ,-</h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.ledgerRows.length > 0 ? (
@@ -84,7 +84,7 @@ export const LedgerTemplate: React.FC = () => {
                 <h2 className="text-lg font-semibold">{item.description}</h2>
                 <p className="text-gray-600">{item.additionalDescription}</p>
                 <div className="flex justify-between mt-3 text-sm">
-                  <span>Rp. {item.balanceChange.toLocaleString("id-ID")} ,-</span>
+                  <span>Saldo: Rp. {item.balanceChange.toLocaleString("id-ID")} ,-</span>
                   {item.debit ? (
                     <span className="text-green-600">+ Rp. {item.debit.toLocaleString("id-ID")} ,-</span>
                   ) : (
