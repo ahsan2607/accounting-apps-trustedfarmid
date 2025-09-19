@@ -10,6 +10,16 @@ export interface Order {
   qty: string;
 }
 
+export interface StockIn {
+  supplier: string;
+  item: string;        // required
+  subkind: string;     // required (dropdown, can start "")
+  unit: string;        // required
+  qty: number;         // required
+  qtyPerUnit?: number; // optional
+  price: number;       // required
+}
+
 export interface OperationalAccountingData {
   tanggal: string;
   //   kategori: string;
@@ -53,19 +63,25 @@ export interface LogoutResponse {
 }
 
 export interface LedgerData {
-  date: string;
-  description: string;
-  additionalDescription: string;
-  credit: number;
-  debit: number;
+  ledgerRows: {
+    date: string;
+    description: string;
+    additionalDescription: string;
+    credit: number;
+    debit: number;
+    balanceChange: number;
+  }[];
+  lastBalance: number
 }
 
 // Type for proxy request body (matches Apps Script doPost input)
 export interface ProxyRequestBody {
-  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated' | 'getLedgerData' | 'getAllLedgerAccounts';
+  action: 'checkLogin' | 'logout' | 'getCustomerList' | 'getItemList' | 'submitOrders' | 'submitFormOperationalAccounting' | 'getAccountingCategoryData' | 'getAccountingTransferableAccounts' | 'generateLedger' | 'printInvoiceToPDF' | 'isAuthenticated' | 'getLedgerData' | 'getAllLedgerAccounts' | 'submitStockIn';
   username?: string;
   password?: string;
   deliveryDate?: string;
+  date?: string;
+  stocks?: StockIn[];
   orders?: Order[];
   entryDate?: string;
   entries?: Omit<OperationalAccountingData, "keteranganTambahan">[]

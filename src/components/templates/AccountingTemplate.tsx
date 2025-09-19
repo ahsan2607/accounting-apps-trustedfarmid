@@ -27,6 +27,8 @@ export const AccountingTemplate: React.FC = () => {
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
+  // const tanggal = new Date().toISOString().split("T")[0];
+
   const showSuccessToast = useToastSuccess();
   const showErrorToast = useToastError();
 
@@ -160,7 +162,7 @@ export const AccountingTemplate: React.FC = () => {
 
     if (response.success) {
       showSuccessToast(response.data || "All entries submitted successfully");
-      setTanggal("");
+      // setTanggal("");
       setEntries([
         {
           nominal: "",

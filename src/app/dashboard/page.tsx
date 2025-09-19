@@ -77,7 +77,6 @@ export default function Home() {
       <ul className="space-y-2">
         {menuItems.map((item) => {
           const isOpen = openAccordions[item.href] || false;
-
           return (
             <li key={item.href}>
               {/* Accordion Header */}
