@@ -16,7 +16,7 @@ import { X } from "lucide-react";
 export const AccountingTemplate: React.FC = () => {
   const [subCategories, setSubCategories] = useState<KategoriData[]>([]);
   const [transferableAccounts, setTransferableAccounts] = useState<TransferableAccount[]>([]);
-  // const [tanggal, setTanggal] = useState<string>("");
+  const [tanggal, setTanggal] = useState<string>("");
   const [entries, setEntries] = useState<Omit<OperationalAccountingData, "tanggal">[]>([
     {
       nominal: "",
@@ -27,7 +27,7 @@ export const AccountingTemplate: React.FC = () => {
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const tanggal = new Date().toISOString().split("T")[0];
+  // const tanggal = new Date().toISOString().split("T")[0];
 
   const showSuccessToast = useToastSuccess();
   const showErrorToast = useToastError();
@@ -227,12 +227,12 @@ export const AccountingTemplate: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmitAll} className="space-y-4 mb-8">
-        {/* <Field.Date
+        <Field.Date
           value={tanggal}
           onChange={(e) => setTanggal(e.target.value)}
           label="Tanggal Entri"
           className="w-full"
-        /> */}
+        />
 
         <h2 className="text-xl font-semibold mb-2">Detail Entri</h2>
         {entries.map((entry, id) => (
