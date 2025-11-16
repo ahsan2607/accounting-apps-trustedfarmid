@@ -57,21 +57,21 @@ export const LedgerTemplate: React.FC = () => {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.ledgerRows.length > 0 ? (
           data.ledgerRows
-            // .sort((a, b) => {
-            //   const dateA = new Date(a.date);
-            //   const dateB = new Date(b.date);
+            .sort((a, b) => {
+              const dateA = new Date(a.date);
+              const dateB = new Date(b.date);
 
-            //   // 1. Sort by date (newest to oldest)
-            //   if (dateA > dateB) return -1;
-            //   if (dateA < dateB) return 1;
+              // 1. Sort by date (newest to oldest)
+              if (dateA > dateB) return -1;
+              if (dateA < dateB) return 1;
 
-            //   // 2. Sort by description (if dates are equal)
-            //   const descCompare = a.description.localeCompare(b.description);
-            //   if (descCompare !== 0) return descCompare;
+              // 2. Sort by description (if dates are equal)
+              const descCompare = a.description.localeCompare(b.description);
+              if (descCompare !== 0) return descCompare;
 
-            //   // 3. Sort by additionalDescription (if description is also equal)
-            //   return a.additionalDescription.localeCompare(b.additionalDescription);
-            // })
+              // 3. Sort by additionalDescription (if description is also equal)
+              return a.additionalDescription.localeCompare(b.additionalDescription);
+            })
             .map((item, i) => (
               <div key={i} className="rounded shadow bg-white p-3 border border-gray-200">
                 <p className="text-sm text-gray-500">
